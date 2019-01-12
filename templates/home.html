@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+{% block body %}
+    <h1 class="cover-heading">PadaLingsa: Pupuh Identifier</h1>
+    <p class="lead">
+        Sistem pengenalan jenis <i>pupuh</i> Bali dari fitur ORB Descriptors
+        dan Brute Force Matching disertai dengan segmentasi bagian akhir baris
+        dari audio input untuk mendapatkan padalingsa <i>pupuh</i>. Masukkan
+        audio <i>pupuh</i> Bali pada form dibawah (format file .wav)
+    </p>
+    <form id="upload-form" action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" accept="audio/wav" autofocus>
+        <input type="submit" value="send">
+    </form>
+    {% for image in images %}
+        <a class="image" href="{{ image.src }}" style="width: {{ image.width }}px; height: {{ image.height }}px">
+            <img src="{{ image.src }}" data-src="{{ image.src }}?w={{ image.width }}&amp;h={{ image.height }}" width="{{ image.width }}" height="{{ image.height }}" />
+        </a>
+    {% endfor %}
+{% endblock %}

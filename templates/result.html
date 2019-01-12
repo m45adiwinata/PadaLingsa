@@ -1,0 +1,13 @@
+{% extends 'layout.html' %}
+{% block body %}
+    <h1>Result page</h1>
+    Sample rate : {{rates}}<br>
+    Strings : {{strings}}<br>
+    Spectrograms: <br>
+    {% for image in images %}
+        <a class="image" href="{{ image.src }}" style="width: {{ image.width }}px; height: {{ image.height }}px">
+            <img src="{{ image.src }}" data-src="{{ image.src }}?w={{ image.width }}&amp;h={{ image.height }}" width="{{ image.width }}" height="{{ image.height }}" />
+        </a>
+    {% endfor %}<br>
+    Identified as : {{result[0]}}
+{% endblock %}

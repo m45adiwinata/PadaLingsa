@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block body %}
+    <h1>How The System Performed</h1>
+    <!-- <p class="lead">
+        Sistem bekerja dengan cara mendeteksi akhir baris audio input
+        lalu dilanjutkan dengan mengubahnya menjadi citra spektogram
+        dan kemudian mengekstraksi fitur dari citra tersebut dengan metode
+        ORB. Fitur dari citra spektogram digunakan untuk membangun susunan
+        string yang menjadi padalingsa dari audio input yang berupa <i>pupuh</i> Bali.
+    </p> -->
+    <a class="image" href="{{ image1.src }}" style="width: {{ image1.width }}px; height: {{ image1.height }}px">
+        <img src="{{ image1.src }}" data-src="{{ image1.src }}?w={{ image1.width }}&amp;h={{ image1.height }}" width="{{ image1.width }}" height="{{ image1.height }}" alt="Short Term Energy Calculation" />
+    </a>
+    <a class="image" href="{{ image2.src }}" style="width: {{ image2.width }}px; height: {{ image2.height }}px">
+        <img src="{{ image2.src }}" data-src="{{ image2.src }}?w={{ image2.width }}&amp;h={{ image2.height }}" width="{{ image2.width }}" height="{{ image2.height }}" alt="Fingerprint Flowchart" />
+    </a>
+{% endblock %}
