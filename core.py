@@ -13,6 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),'librar
 import stft
 import energy
 import time
+import pyaudio
 
 app = Flask(__name__)
 _author__ = 'May Divine'
@@ -59,9 +60,9 @@ def create_spectrogram(mX, H, rates, N, filename, i):
     
 def detect_silence(rates, M, Energy):
     Eaverage = np.average(Energy)
-    sMinDuration = 0.7      #Minimum duration to identified as silence
+    sMinDuration = 0.8      #Minimum duration to identified as silence
     sMin = int(rates/float(M)*sMinDuration)     #sMinDuration as samples
-    Etconst = 0.2 #0.124
+    Etconst = 0.25 #0.124
     Ethreshold = Etconst * Eaverage
     Esilences = np.array([], dtype=np.int32)
     counter = []
@@ -111,10 +112,27 @@ def image(filename):
 
 @app.route('/')
 def index():
-    return render_template('home.html')
+    ppicture_path = '.\\images\\grenceng.jpg'
+    ppicture = readImage(ppicture_path, 140, 140)
+    '''
+    ppicture_path2 = '.\\images\\bayu.png'
+    ppicture2 = readImage(ppicture_path2, 140, 140)
+    ppicture_path3 = '.\\images\\vida.png'
+    ppicture3 = readImage(ppicture_path3, 140, 140)
+    '''
+    car1_path = '.\\images\\sekaa gong.jpg'
+    car1 = readImage(car1_path, 1024, 400)
+    return render_template(
+        'home.html',
+        pp = ppicture,
+        #pp2 = ppicture2,
+        #pp3 = ppicture3,
+        car1 = car1
+    )
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    starttime = time.time()
     target = os.path.join(APP_ROOT, 'wavs/')
     print(target)
 
@@ -124,7 +142,6 @@ def upload():
     for file in request.files.getlist('file'):
         print(file)
         filename = file.filename
-        print(filename)
         destination = '/'.join([target, filename])
         file.save(destination)
         rates, audio = wavfile.read(destination)
@@ -139,6 +156,8 @@ def upload():
         cuts = np.array([])
         strings = []
         spekt = []
+        modspekt = []
+        print(models)
         for i in range(Esilences.shape[0]):
             cutpoint = Esilences[i,0]
             if cutpoint - backtrack >= 0:
@@ -149,7 +168,7 @@ def upload():
                 create_spectrogram(mX, H, rates, N, filename, i)
                 spectimg = "models/test/"+filename+"_"+str(i)+".png"
                 fakepath = '.\\'+'\\'.join(spectimg.split('/'))
-                spekt.append(readImage(fakepath, 80, 60))
+                spekt.append(readImage(fakepath, 160, 120))
                 test = cv2.imread(spectimg, 0)
                 kpTest, desTest = orb.detectAndCompute(test, None)
                 scores = np.array((), dtype = 'int32')
@@ -159,17 +178,31 @@ def upload():
                     matches = bf.match(desTrain, desTest)
                     matches = sorted(matches, key = lambda x:x.distance)
                     distance = []
-                    for match in matches:
-                        if match.distance < 30:
-                            distance.append(match.distance)
-                    scores = np.append(scores, sum(distance))
-                strings.append(models[np.argmax(scores)].split('/')[-1].split('.')[0])
+                    for j in range(len(matches)):
+                        distance.append(matches[j].distance)
+                    scores = np.append(scores, np.mean(distance))
+                # print(scores)
+                temp_scores = np.array((), dtype = 'int32')
+                for s in range(5):
+                    temp_scores = np.append(temp_scores, np.min(scores[s*5:(s+1)*5]))
+                # strings.append(models[np.argmin(scores)].split('/')[-1].split('_')[0])
+                print(temp_scores)
+                temp_models = ['a', 'e', 'i', 'o', 'u']
+                strings.append(temp_models[np.argmin(temp_scores)])
+                winner_model = models[np.argmin(temp_scores)*5+np.argmin(scores[np.argmin(temp_scores)*5:np.argmin(temp_scores)*5+5])]
+                # fakepath2 = '.\\'+'\\'.join(models[np.argmin(scores)].split('/'))
+                fakepath2 = '.\\'+'\\'.join(winner_model.split('/'))
+                modspekt.append(readImage(fakepath2, 160, 120))
     result = brute_force(strings)
+    endtime = time.time() - starttime
     return render_template('result.html',
                             rates = rates, 
                             result = result, 
                             strings = strings,
-                            images = spekt
+                            images = spekt,
+                            imglen = len(spekt),
+                            modspekt = modspekt,
+                            endtime = endtime
                             )
 
 @app.route('/feature')

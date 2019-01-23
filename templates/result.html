@@ -1,13 +1,47 @@
 {% extends 'layout.html' %}
 {% block body %}
-    <h1>Result page</h1>
-    Sample rate : {{rates}}<br>
-    Strings : {{strings}}<br>
-    Spectrograms: <br>
-    {% for image in images %}
-        <a class="image" href="{{ image.src }}" style="width: {{ image.width }}px; height: {{ image.height }}px">
-            <img src="{{ image.src }}" data-src="{{ image.src }}?w={{ image.width }}&amp;h={{ image.height }}" width="{{ image.width }}" height="{{ image.height }}" />
-        </a>
-    {% endfor %}<br>
-    Identified as : {{result[0]}}
+    <div class="container">
+        <h1>Result page</h1>
+        Sample rate : {{rates}}<br>
+        Strings : 
+        {% for string in strings %}
+            {{string}}
+        {% endfor %}
+        <br>
+        Identified as : 
+        {% for r in result %}
+            {{r}}
+        {% endfor %}
+        <br>Proccessing time: {{endtime}} seconds
+        <br>
+        Spectrograms: <br>
+        <div class="row text-center" style="background:darkgrey;">
+            <div class="col-lg-4">
+                <h4>Input</h4>
+            </div>
+            <div class="col-lg-4">
+                <h4>Model</h4>
+            </div>
+            <div class="col-lg-4">
+                <h4>String</h4>
+            </div>
+        </div>
+        <div class="row text-center" style="background:darkgrey;">
+            {% for i in range(imglen) %}
+            <div class="col-lg-4">
+                <a class="image" href="{{ images[i].src }}" style="width: {{ images[i].width }}px; height: {{ images[i].height }}px">
+                    <img src="{{ images[i].src }}" data-src="{{ images[i].src }}?w={{ images[i].width }}&amp;h={{ images[i].height }}" width="{{ images[i].width }}" height="{{ images[i].height }}" />
+                </a>
+            </div>
+            <div class="col-lg-4">
+                <a class="image" href="{{ modspekt[i].src }}" style="width: {{ modspekt[i].width }}px; height: {{ modspekt[i].height }}px">
+                    <img src="{{ modspekt[i].src }}" data-src="{{ modspekt[i].src }}?w={{ modspekt[i].width }}&amp;h={{ modspekt[i].height }}" width="{{ modspekt[i].width }}" height="{{ modspekt[i].height }}" />
+                </a>
+            </div>
+            <div class="col-lg-4">
+                <h4>{{strings[i]}}</h4>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

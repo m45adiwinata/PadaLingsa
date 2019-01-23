@@ -1,4 +1,4 @@
-Sinom:a,i,a,i,i,u,a,i,o,a
+Sinom:a,i,a,i,i,u,a,i,u,a
 Ginada:a,i,a,u,a,i,a
 Pucung:u,u,a,i,a,
 Maskumambang:a,i,a,i,a
