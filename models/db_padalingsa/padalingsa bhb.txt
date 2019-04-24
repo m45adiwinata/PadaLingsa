@@ -1,10 +1,10 @@
 Sinom:a,i,a,i,i,u,a,i,u,a
 Ginada:a,i,a,u,a,i,a
+Pucung:u,u,a,i,a,
+Maskumambang:a,i,a,i,a
 Ginanti:u,i,a,i,a,i
+Durma:a,i,a,a,i,a,i
 Pangkur:a,i,u,a,u,a,i
 Semarandana:i,a,a,a,a,u,a
-Pucung:u,u,a,i,a
-Maskumambang:a,i,a,i,a
-Durma:a,i,a,a,i,a,i
-Dangdang:a,e,u,i,a,u,a,u,a
+Dangdang:a,e,u,i,a,u,a,i,a
 Mijil:i,o,e,e,i,i,u

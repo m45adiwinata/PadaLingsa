@@ -1,0 +1,6 @@
+models/train/Pelog/a/
+models/train/Pelog/i/
+models/train/Pelog/u/
+models/train/Slendro/a/
+models/train/Slendro/i/
+models/train/Slendro/u/

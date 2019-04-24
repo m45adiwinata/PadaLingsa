@@ -31,20 +31,44 @@ for p in pl:
     p = p.strip()
     judul.append(p.split(':')[0])
     padalingsa.append(p.split(':')[1].split(','))
-model_path = 'models/train/'
-models = [os.path.join(model_path,fname) for fname in os.listdir(model_path) if fname.endswith('.png')]
+
+models_path = open('model path.txt', 'r')
+model_path = []
+for mp in models_path:
+    mp = mp.strip()
+    model_path.append(mp)
+models = np.array([])
+for path in model_path:
+    models = np.append(models, [os.path.join(path,fname) for fname in os.listdir(path) if fname.endswith('.png')])
 orb = cv2.ORB_create()
 bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
 
 def brute_force(strings):
     result = []
+    matches = []
+    matches_judul = []
+    defined = False
     for p in range(len(padalingsa)):
-        for i in range(len(padalingsa[p]) - len(strings)):
-            if padalingsa[p][i] == strings[0]:
-                temp = padalingsa[p][i:i+len(strings)]
-                if strings == temp:
-                    result.append(judul[p])
+        if len(padalingsa[p]) == len(strings):
+            defined = True
+            match = []
+            for s in range(len(strings)):
+                match.append(char_comparison(strings[s], padalingsa[p][s]))
+            matches.append(np.sum(match))
+            matches_judul.append(judul[p])
+    if defined == False:
+        return ['undefined']
+    result.append(matches_judul[np.argmin(matches)])
     return result
+	
+def char_comparison(char1, char2):
+    characters = ['a', 'e', 'i', 'o', 'u']
+    for i in range(len(characters)):
+        if char1 == characters[i]:
+            enum_ch1 = i
+        if char2 == characters[i]:
+            enum_ch2 = i
+    return abs(enum_ch1 - enum_ch2)
 
 def create_spectrogram(mX, H, rates, N, filename, i):
     maxplotfreq = 5000.0
@@ -112,21 +136,19 @@ def image(filename):
 
 @app.route('/')
 def index():
-    ppicture_path = '.\\images\\grenceng.jpg'
+    ppicture_path = '.\\images\\unud.png'
     ppicture = readImage(ppicture_path, 140, 140)
-    '''
-    ppicture_path2 = '.\\images\\bayu.png'
+    ppicture_path2 = '.\\images\\mipa.png'
     ppicture2 = readImage(ppicture_path2, 140, 140)
-    ppicture_path3 = '.\\images\\vida.png'
+    ppicture_path3 = '.\\images\\ilkom.png'
     ppicture3 = readImage(ppicture_path3, 140, 140)
-    '''
     car1_path = '.\\images\\sekaa gong.jpg'
     car1 = readImage(car1_path, 1024, 400)
     return render_template(
         'home.html',
         pp = ppicture,
-        #pp2 = ppicture2,
-        #pp3 = ppicture3,
+        pp2 = ppicture2,
+        pp3 = ppicture3,
         car1 = car1
     )
 
@@ -134,7 +156,6 @@ def index():
 def upload():
     starttime = time.time()
     target = os.path.join(APP_ROOT, 'wavs/')
-    print(target)
 
     if not os.path.isdir(target):
         os.mkdir(target)
@@ -157,7 +178,6 @@ def upload():
         strings = []
         spekt = []
         modspekt = []
-        print(models)
         for i in range(Esilences.shape[0]):
             cutpoint = Esilences[i,0]
             if cutpoint - backtrack >= 0:
@@ -181,17 +201,16 @@ def upload():
                     for j in range(len(matches)):
                         distance.append(matches[j].distance)
                     scores = np.append(scores, np.mean(distance))
-                # print(scores)
-                temp_scores = np.array((), dtype = 'int32')
-                for s in range(5):
-                    temp_scores = np.append(temp_scores, np.min(scores[s*5:(s+1)*5]))
-                # strings.append(models[np.argmin(scores)].split('/')[-1].split('_')[0])
-                print(temp_scores)
-                temp_models = ['a', 'e', 'i', 'o', 'u']
-                strings.append(temp_models[np.argmin(temp_scores)])
-                winner_model = models[np.argmin(temp_scores)*5+np.argmin(scores[np.argmin(temp_scores)*5:np.argmin(temp_scores)*5+5])]
-                # fakepath2 = '.\\'+'\\'.join(models[np.argmin(scores)].split('/'))
-                fakepath2 = '.\\'+'\\'.join(winner_model.split('/'))
+                # temp_scores = np.array((), dtype = 'int32')
+                # for s in range(5):
+                #     temp_scores = np.append(temp_scores, np.min(scores[s*5:(s+1)*5]))
+                strings.append(models[np.argmin(scores)].split('/')[-2])
+                # print(temp_scores)
+                # temp_models = ['a', 'e', 'i', 'o', 'u']
+                # strings.append(temp_models[np.argmin(temp_scores)])
+                # winner_model = models[np.argmin(temp_scores)*5+np.argmin(scores[np.argmin(temp_scores)*5:np.argmin(temp_scores)*5+5])]
+                fakepath2 = '.\\'+'\\'.join(models[np.argmin(scores)].split('/'))
+                # fakepath2 = '.\\'+'\\'.join(winner_model.split('/'))
                 modspekt.append(readImage(fakepath2, 160, 120))
     result = brute_force(strings)
     endtime = time.time() - starttime
