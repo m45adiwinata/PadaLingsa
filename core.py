@@ -215,6 +215,7 @@ def upload():
     result = brute_force(strings)
     endtime = time.time() - starttime
     return render_template('result.html',
+                            filename = filename,
                             rates = rates, 
                             result = result, 
                             strings = strings,
